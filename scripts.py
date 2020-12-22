@@ -25,7 +25,7 @@ def create_commendation(schoolkid_full_name, subject):
     subject: наименование предмета
     return: None
     """
-    COMMENDATIONS = ["Молодец!", "Превосходно!", "Отлично!", ]
+    commendations = ["Молодец!", "Превосходно!", "Отлично!", ]
     lesson = Lesson.objects.filter(group_letter='А', year_of_study=6, subject__title=subject).order_by('-date').first()
     if not lesson:
         print('Урок для выставления похвалы не найден')
