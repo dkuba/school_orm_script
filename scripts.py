@@ -1,4 +1,5 @@
 import random
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from datacenter.models import Schoolkid, Lesson, Commendation, \
     Chastisement, Mark
 
@@ -31,13 +32,17 @@ def create_commendation(schoolkid_full_name, subject):
         first()
     if not lesson:
         print('Урок для выставления похвалы не найден')
-    childs = Schoolkid.objects.filter(full_name__contains=schoolkid_full_name)
-    if childs.count() > 1:
-        print('Найдено больше одного ученика')
-        return
-    elif not childs:
+
+    try:
+        children = Schoolkid.objects.\
+            get(full_name__contains=schoolkid_full_name)
+    except ObjectDoesNotExist:
         print(f'Ученик с именем {schoolkid_full_name} не найден в базе данных')
         return
+    except MultipleObjectsReturned:
+        print('Найдено больше одного ученика')
+        return
+
     Commendation.objects.create(text=random.choice(commendations),
-                                created=lesson.date, schoolkid=childs[0],
+                                created=lesson.date, schoolkid=children,
                                 subject=lesson.subject, teacher=lesson.teacher)
